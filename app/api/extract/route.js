@@ -22,27 +22,38 @@ export async function POST(req) {
 
     const jdResp = await model.generateContent(
       `Extract all technical and soft skills from this job description.
-Return ONLY a valid JSON array, no markdown.
-Each item: {"skill": string, "importance": "critical"|"important"|"nice-to-have", "level": "beginner"|"intermediate"|"expert"}
+Return ONLY valid JSON in this exact format:
+{
+  "skills": [
+    {"skill": "string", "importance": "critical"|"important"|"nice-to-have", "level": "beginner"|"intermediate"|"expert"}
+  ]
+}
 
 Job Description:
 ---
 ${jdText.slice(0, 4000)}
 ---`
     );
-    const jdSkills = parseJSON(jdResp.response.text()) || [];
+    const parsedJd = parseJSON(jdResp.response.text());
+    // Safely handle both array and object formats
+    const jdSkills = Array.isArray(parsedJd) ? parsedJd : (parsedJd?.skills || []);
 
     const resResp = await model.generateContent(
       `Extract all skills from this resume.
-Return ONLY a valid JSON array, no markdown.
-Each item: {"skill": string, "years_experience": number|null, "proficiency_claimed": "beginner"|"intermediate"|"expert"}
+Return ONLY valid JSON in this exact format:
+{
+  "skills": [
+    {"skill": "string", "years_experience": number|null, "proficiency_claimed": "beginner"|"intermediate"|"expert"}
+  ]
+}
 
 Resume:
 ---
 ${resumeText.slice(0, 4000)}
 ---`
     );
-    const resumeSkills = parseJSON(resResp.response.text()) || [];
+    const parsedRes = parseJSON(resResp.response.text());
+    const resumeSkills = Array.isArray(parsedRes) ? parsedRes : (parsedRes?.skills || []);
 
     const gaps = [];
     for (const jdSkill of jdSkills) {
