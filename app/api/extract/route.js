@@ -20,40 +20,28 @@ export async function POST(req) {
     const { jdText, resumeText } = await req.json();
     const model = getModel();
 
-    const jdResp = await model.generateContent(
-      `Extract all technical and soft skills from this job description.
-Return ONLY valid JSON in this exact format:
-{
-  "skills": [
-    {"skill": "string", "importance": "critical"|"important"|"nice-to-have", "level": "beginner"|"intermediate"|"expert"}
-  ]
-}
+    // COMBINED PROMPT: This saves 1 API request per run to avoid 429 errors.
+    const combinedResp = await model.generateContent(
+      `Analyze these two texts and return ONLY a valid JSON object.
+      
+      JD Text:
+      ${jdText.slice(0, 3000)}
+      
+      Resume Text:
+      ${resumeText.slice(0, 3000)}
 
-Job Description:
----
-${jdText.slice(0, 4000)}
----`
+      Return JSON format:
+      {
+        "jd_skills": [{"skill": "string", "importance": "critical", "level": "expert"}],
+        "resume_skills": [{"skill": "string", "proficiency_claimed": "expert"}]
+      }`
     );
-    const parsedJd = parseJSON(jdResp.response.text());
-    // Safely handle both array and object formats
-    const jdSkills = Array.isArray(parsedJd) ? parsedJd : (parsedJd?.skills || []);
 
-    const resResp = await model.generateContent(
-      `Extract all skills from this resume.
-Return ONLY valid JSON in this exact format:
-{
-  "skills": [
-    {"skill": "string", "years_experience": number|null, "proficiency_claimed": "beginner"|"intermediate"|"expert"}
-  ]
-}
-
-Resume:
----
-${resumeText.slice(0, 4000)}
----`
-    );
-    const parsedRes = parseJSON(resResp.response.text());
-    const resumeSkills = Array.isArray(parsedRes) ? parsedRes : (parsedRes?.skills || []);
+    const parsedData = parseJSON(combinedResp.response.text());
+    
+    // Safely extract the lists
+    const jdSkills = parsedData?.jd_skills || [];
+    const resumeSkills = parsedData?.resume_skills || [];
 
     const gaps = [];
     for (const jdSkill of jdSkills) {
