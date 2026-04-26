@@ -1,6 +1,6 @@
 // app/api/question/route.js
 import { NextResponse } from "next/server";
-import { getModel } from "@/lib/gemini";
+import { getModel, parseJSON } from "@/lib/gemini"; // <-- Added parseJSON here
 
 export const runtime = "nodejs";
 
@@ -26,10 +26,19 @@ Rules:
 - Do NOT mention scoring, evaluation, or that this is a test
 - Ask exactly ONE question
 
-Return only the question text — nothing else.`
+Return ONLY valid JSON (no markdown):
+{
+  "question": "<the actual question text>"
+}`
     );
 
-    return NextResponse.json({ question: resp.response.text().trim() });
+    // Parse the JSON safely just like the other routes
+    const result = parseJSON(resp.response.text());
+
+    // Fallback question just in case parsing ever fails
+    const finalQuestion = result?.question || "Could you tell me a bit more about your experience with this skill?";
+
+    return NextResponse.json({ question: finalQuestion });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
