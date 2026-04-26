@@ -772,7 +772,7 @@ export default function AssessPage() {
           flexWrap: "wrap", gap: 12
         }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.72rem", color: "var(--ink-4)" }}>
-            SkillScan · Powered by Gemini 1.5 Flash
+            SkillScan
           </span>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.72rem", color: "var(--ink-4)" }}>
             Free to use · No account needed

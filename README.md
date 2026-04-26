@@ -50,5 +50,5 @@ lib/gemini.js          - Reads GEMINI_API_KEY from process.env
 ## Customise
 Questions per skill: app/assess/page.jsx line 6 - QUESTIONS_PER_SKILL
 Max skills assessed: app/api/extract/route.js - gaps.slice(0, 6)
-LLM model: lib/gemini.js - gemini-1.5-flash
+LLM model: lib/gemini.js - gemini-205-flash
 Colors: app/globals.css - CSS variables at top

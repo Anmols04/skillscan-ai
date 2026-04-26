@@ -21,7 +21,7 @@ export default function Home() {
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: "0.75rem",
               color: "var(--ink-3)", letterSpacing: "0.08em", textTransform: "uppercase"
-            }}>AI-Powered · Gemini 1.5 Flash</span>
+            }}>AI-Powered</span>
           </div>
 
           <h1 style={{ marginBottom: 22 }}>
