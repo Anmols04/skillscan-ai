@@ -92,9 +92,9 @@ export default function AssessPage() {
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      setJdSkills(data.jdSkills);
-      setResumeSkills(data.resumeSkills);
-      setGaps(data.gaps);
+      setJdSkills(Array.isArray(data.jdSkills) ? data.jdSkills : (data.jdSkills?.skills || []));
+      setResumeSkills(Array.isArray(data.resumeSkills) ? data.resumeSkills : (data.resumeSkills?.skills || []));
+      setGaps(Array.isArray(data.gaps) ? data.gaps : (data.gaps?.skills || data.gaps || []));
       setStage("gap-review");
       setStatus("");
     } catch (err) {
